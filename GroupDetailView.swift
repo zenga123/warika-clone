@@ -158,26 +158,44 @@ struct GroupDetailView: View {
                     }
                 }
                 
-                // 정산 버튼
-                if !group.expenses.isEmpty {
-                    Button(action: {
-                        showingSettlement = true
-                    }) {
-                        HStack {
-                            Image(systemName: "arrow.left.arrow.right")
-                                .font(.system(size: 16))
-                            Text("明細を見る")
-                                .font(.system(size: 16, weight: .medium))
-                        }
-                        .foregroundColor(Color.walicaPrimary)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 15)
-                        .background(Color.walicaPrimary.opacity(0.1))
-                        .cornerRadius(15)
-                    }
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 10)
-                }
+                // 정산 정보 표시
+                                if !group.expenses.isEmpty {
+                                    VStack(alignment: .leading, spacing: 12) {
+                                        HStack {
+                                            Text("清算方法")
+                                                .font(.system(size: 18, weight: .bold))
+                                            
+                                            Spacer()
+                                        }
+                                        .padding(.horizontal, 20)
+                                        
+                                        let settlements = group.calculateSettlement()
+                                        if settlements.isEmpty {
+                                            Text("精算すべき金額はありません")
+                                                .padding()
+                                                .foregroundColor(.gray)
+                                        } else {
+                                            VStack(spacing: 10) {
+                                                ForEach(settlements) { settlement in
+                                                    HStack {
+                                                        Text("\(settlement.from.name) → \(settlement.to.name)")
+                                                            .font(.system(size: 16))
+                                                        
+                                                        Spacer()
+                                                        
+                                                        Text("¥\(Int(settlement.amount))")
+                                                            .font(.system(size: 16, weight: .semibold))
+                                                    }
+                                                    .padding(.horizontal, 20)
+                                                    .padding(.vertical, 8)
+                                                }
+                                            }
+                                            .padding(.vertical, 10)
+                                        }
+                                        
+
+                                    }
+                                }
             }
         }
         .background(Color(UIColor.systemBackground))

@@ -62,41 +62,44 @@ struct AddExpenseView: View {
                         .padding(.top, 20)
                         
                         // 참가자 선택
-                        VStack(alignment: .leading, spacing: 12) {
-                            ForEach(group.members) { member in
-                                Button(action: {
-                                    toggleParticipant(member)
-                                }) {
-                                    HStack {
-                                        ZStack {
-                                            Rectangle()
-                                                .fill(selectedParticipants.contains(where: { $0.id == member.id }) ? Color.walicaPrimary : Color.white)
-                                                .frame(width: 24, height: 24)
-                                                .cornerRadius(4)
-                                                .overlay(
-                                                    RoundedRectangle(cornerRadius: 4)
-                                                        .stroke(Color.walicaPrimary, lineWidth: 1)
-                                                )
-                                            
-                                            if selectedParticipants.contains(where: { $0.id == member.id }) {
-                                                Image(systemName: "checkmark")
-                                                    .foregroundColor(.white)
-                                                    .font(.system(size: 14, weight: .bold))
-                                            }
-                                        }
-                                        
-                                        Text(member.name)
-                                            .font(.system(size: 16))
-                                            .foregroundColor(.primary)
-                                            .padding(.leading, 8)
-                                    }
-                                    .padding(.vertical, 8)
-                                    .contentShape(Rectangle())
-                                }
-                                .buttonStyle(PlainButtonStyle())
-                            }
-                        }
-                        .padding(.vertical, 8)
+                                                ScrollView(.horizontal, showsIndicators: false) {
+                                                    HStack(spacing: 12) {
+                                                        ForEach(group.members) { member in
+                                                            Button(action: {
+                                                                toggleParticipant(member)
+                                                            }) {
+                                                                HStack {
+                                                                    ZStack {
+                                                                        Rectangle()
+                                                                            .fill(selectedParticipants.contains(where: { $0.id == member.id }) ? Color.walicaPrimary : Color.white)
+                                                                            .frame(width: 24, height: 24)
+                                                                            .cornerRadius(4)
+                                                                            .overlay(
+                                                                                RoundedRectangle(cornerRadius: 4)
+                                                                                    .stroke(Color.walicaPrimary, lineWidth: 1)
+                                                                            )
+                                                                        
+                                                                        if selectedParticipants.contains(where: { $0.id == member.id }) {
+                                                                            Image(systemName: "checkmark")
+                                                                                .foregroundColor(.white)
+                                                                                .font(.system(size: 14, weight: .bold))
+                                                                        }
+                                                                    }
+                                                                    
+                                                                    Text(member.name)
+                                                                        .font(.system(size: 16))
+                                                                        .foregroundColor(.primary)
+                                                                        .padding(.leading, 8)
+                                                                }
+                                                                .padding(.vertical, 8)
+                                                                .padding(.horizontal, 4)
+                                                                .contentShape(Rectangle())
+                                                            }
+                                                            .buttonStyle(PlainButtonStyle())
+                                                        }
+                                                    }
+                                                }
+                                                .padding(.vertical, 8)
                         
                         // の
                         Text("の")
