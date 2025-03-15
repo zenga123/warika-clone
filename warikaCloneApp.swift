@@ -1,10 +1,4 @@
-//
-//  warikaCloneApp.swift
-//  warikaClone
-//
-//  Created by musung on 2025/03/15.
-//
-
+// warikaCloneApp.swift
 import SwiftUI
 
 @main

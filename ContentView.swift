@@ -1,24 +1,48 @@
-//
-//  ContentView.swift
-//  warikaClone
-//
-//  Created by musung on 2025/03/15.
-//
-
+// ContentView.swift
 import SwiftUI
 
 struct ContentView: View {
+    @State private var groups: [Group] = []
+    @State private var isShowingCreateGroup = false
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        NavigationView {
+            VStack {
+                if groups.isEmpty {
+                    VStack {
+                        Text("まだグループがありません")
+                            .font(.title2)
+                            .padding()
+                        
+                        Button(action: {
+                            isShowingCreateGroup = true
+                        }) {
+                            Text("グループを作成")
+                                .font(.headline)
+                                .foregroundColor(.white)
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(Color.walicaPrimary)
+                                .cornerRadius(8)
+                        }
+                        .padding(.horizontal)
+                    }
+                } else {
+                    List {
+                        ForEach(groups) { group in
+                            NavigationLink(destination: GroupDetailView(group: $groups[groups.firstIndex(where: { $0.id == group.id })!])) {
+                                Text(group.name)
+                                    .font(.headline)
+                            }
+                        }
+                    }
+                    .listStyle(PlainListStyle())
+                }
+            }
+            .navigationTitle("Walica")
+            .sheet(isPresented: $isShowingCreateGroup) {
+                CreateGroupView(groups: $groups, isPresented: $isShowingCreateGroup)
+            }
         }
-        .padding()
     }
-}
-
-#Preview {
-    ContentView()
 }
