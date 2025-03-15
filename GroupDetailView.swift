@@ -5,6 +5,10 @@ struct GroupDetailView: View {
     @Binding var group: Group
     @State private var isAddingExpense = false
     @State private var showingSettlement = false
+    @State private var isEditingGroup = false
+    @State private var editGroupName = ""
+    @State private var editMembers: [Member] = []
+    @State private var newMemberName = ""
     
     var body: some View {
         ScrollView {
@@ -29,7 +33,11 @@ struct GroupDetailView: View {
                             Spacer()
                             
                             Button(action: {
-                                // Edit group name
+                                // Initialize edit values from current group
+                                editGroupName = group.name
+                                editMembers = group.members
+                                newMemberName = ""
+                                isEditingGroup = true
                             }) {
                                 Image(systemName: "pencil")
                                     .font(.system(size: 18))
@@ -208,6 +216,15 @@ struct GroupDetailView: View {
         }
         .sheet(isPresented: $showingSettlement) {
             SettlementView(group: group)
+        }
+        .sheet(isPresented: $isEditingGroup) {
+            EditGroupView(
+                group: $group,
+                isPresented: $isEditingGroup,
+                groupName: $editGroupName,
+                members: $editMembers,
+                newMemberName: $newMemberName
+            )
         }
     }
     
