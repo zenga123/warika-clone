@@ -7,102 +7,184 @@ struct GroupDetailView: View {
     @State private var showingSettlement = false
     
     var body: some View {
-        VStack {
-            HStack {
-                Text(group.name)
-                    .font(.title)
-                    .padding(.leading)
+        ScrollView {
+            VStack(spacing: 16) {
+                // 시계와 콘텐츠 사이 간격을 위한 여백
+                Color.clear
+                    .frame(height: 60)
                 
-                Spacer()
-                
-                Button(action: {
-                    // Edit group name
-                }) {
-                    Image(systemName: "pencil")
-                        .foregroundColor(.white)
-                        .padding(8)
-                        .background(Color.walicaPrimary)
-                        .cornerRadius(8)
-                }
-                .padding(.trailing)
-            }
-            .padding(.vertical)
-            .background(Color.walicaPrimary)
-            .foregroundColor(.white)
-            
-            Text("\(group.members.map { $0.name }.joined(separator: " · "))")
-                .foregroundColor(Color.gray)
-                .padding(.bottom)
-            
-            Button(action: {
-                isAddingExpense = true
-            }) {
-                Text("立替え記録を追加")
-                    .foregroundColor(Color.walicaPrimary)
-                    .padding()
-                    .frame(maxWidth: .infinity)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 8)
-                            .stroke(Color.walicaPrimary, lineWidth: 1)
-                    )
-            }
-            .padding(.horizontal)
-            
-            if group.expenses.isEmpty {
-                Spacer()
-                Text("立替え記録がありません")
-                    .foregroundColor(.gray)
-                    .padding()
-                Spacer()
-            } else {
-                List {
-                    ForEach(group.expenses) { expense in
-                        VStack(alignment: .leading) {
-                            Text(expense.title)
-                                .font(.headline)
+                // 그룹 헤더 영역
+                ZStack {
+                    Rectangle()
+                        .fill(Color.walicaPrimary)
+                        .frame(height: 140)
+                        .edgesIgnoringSafeArea(.top)
+                    
+                    VStack(spacing: 12) {
+                        HStack {
+                            Text(group.name)
+                                .font(.system(size: 24, weight: .bold))
+                                .foregroundColor(.white)
                             
-                            HStack {
-                                Text("\(expense.paidBy.name)が立替え (\(formatDate(expense.date)))")
-                                    .font(.subheadline)
-                                    .foregroundColor(.gray)
-                                
-                                Spacer()
-                                
-                                Text("¥\(Int(expense.amount))")
-                                    .font(.headline)
-                            }
+                            Spacer()
                             
-                            HStack {
-                                ForEach(expense.participants, id: \.self) { participant in
-                                    Text(participant.name)
-                                        .font(.caption)
-                                        .padding(.horizontal, 8)
-                                        .padding(.vertical, 4)
-                                        .background(Circle().fill(Color.walicaPrimary.opacity(0.2)))
-                                        .foregroundColor(Color.walicaPrimary)
-                                }
+                            Button(action: {
+                                // Edit group name
+                            }) {
+                                Image(systemName: "pencil")
+                                    .font(.system(size: 18))
+                                    .foregroundColor(.white)
+                                    .padding(10)
+                                    .background(Color.white.opacity(0.2))
+                                    .clipShape(Circle())
                             }
                         }
-                        .padding(.vertical, 8)
+                        .padding(.horizontal, 20)
+                        .padding(.top, 30)
+                        
+                        HStack {
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack(spacing: 6) {
+                                    ForEach(group.members) { member in
+                                        Text(member.name)
+                                            .font(.system(size: 14))
+                                            .padding(.horizontal, 12)
+                                            .padding(.vertical, 6)
+                                            .background(Color.white.opacity(0.2))
+                                            .cornerRadius(20)
+                                            .foregroundColor(.white)
+                                    }
+                                }
+                            }
+                            .padding(.horizontal, 20)
+                        }
                     }
                 }
-            }
-            
-            if !group.expenses.isEmpty {
+                
+                // 빠른 액션 버튼
                 Button(action: {
-                    showingSettlement = true
+                    isAddingExpense = true
                 }) {
-                    Text("明細を見る")
-                        .foregroundColor(.gray)
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .background(Color.walicaBackground)
-                        .cornerRadius(8)
+                    HStack {
+                        Image(systemName: "plus.circle.fill")
+                            .font(.system(size: 22))
+                        Text("立替え記録を追加")
+                            .font(.system(size: 16, weight: .semibold))
+                    }
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 15)
+                    .background(
+                        LinearGradient(
+                            gradient: Gradient(colors: [Color.walicaPrimary, Color.walicaPrimary.opacity(0.8)]),
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
+                    .cornerRadius(15)
+                    .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
                 }
-                .padding()
+                .padding(.horizontal, 20)
+                .padding(.top, 8)
+                
+                // 지출 기록 목록
+                VStack(alignment: .leading, spacing: 12) {
+                    if group.expenses.isEmpty {
+                        VStack(spacing: 16) {
+                            Image(systemName: "doc.text")
+                                .font(.system(size: 50))
+                                .foregroundColor(Color.walicaLabelSecondary)
+                            
+                            Text("立替え記録がありません")
+                                .font(.system(size: 16))
+                                .foregroundColor(Color.walicaLabelPrimary)
+                            
+                            Text("記録を追加してみましょう")
+                                .font(.system(size: 14))
+                                .foregroundColor(Color.walicaLabelSecondary)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 50)
+                    } else {
+                        Text("立替え記録")
+                            .font(.system(size: 18, weight: .bold))
+                            .padding(.horizontal, 20)
+                            .padding(.top, 10)
+                        
+                        ForEach(group.expenses) { expense in
+                            VStack(alignment: .leading, spacing: 10) {
+                                HStack {
+                                    VStack(alignment: .leading, spacing: 5) {
+                                        Text(expense.title)
+                                            .font(.system(size: 18, weight: .bold))
+                                        
+                                        Text("\(expense.paidBy.name)が立替え")
+                                            .font(.system(size: 14))
+                                            .foregroundColor(.gray)
+                                    }
+                                    
+                                    Spacer()
+                                    
+                                    Text("¥\(Int(expense.amount))")
+                                        .font(.system(size: 20, weight: .bold))
+                                        .foregroundColor(Color.walicaPrimary)
+                                }
+                                
+                                Text(formatDate(expense.date))
+                                    .font(.system(size: 12))
+                                    .foregroundColor(.gray.opacity(0.7))
+                                
+                                ScrollView(.horizontal, showsIndicators: false) {
+                                    HStack(spacing: 6) {
+                                        ForEach(expense.participants, id: \.self) { participant in
+                                            Text(participant.name)
+                                                .font(.system(size: 12))
+                                                .padding(.horizontal, 10)
+                                                .padding(.vertical, 5)
+                                                .background(Color.walicaPrimary.opacity(0.1))
+                                                .cornerRadius(12)
+                                                .foregroundColor(Color.walicaPrimary)
+                                        }
+                                    }
+                                }
+                            }
+                            .padding(16)
+                            .background(Color.walicaCardBackground)
+                            .cornerRadius(12)
+                            .shadow(color: Color.black.opacity(0.05), radius: 3, x: 0, y: 1)
+                            .padding(.horizontal, 20)
+                            .padding(.bottom, 5)
+                        }
+                    }
+                }
+                
+                // 정산 버튼
+                if !group.expenses.isEmpty {
+                    Button(action: {
+                        showingSettlement = true
+                    }) {
+                        HStack {
+                            Image(systemName: "arrow.left.arrow.right")
+                                .font(.system(size: 16))
+                            Text("明細を見る")
+                                .font(.system(size: 16, weight: .medium))
+                        }
+                        .foregroundColor(Color.walicaPrimary)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 15)
+                        .background(Color.walicaPrimary.opacity(0.1))
+                        .cornerRadius(15)
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 10)
+                }
             }
         }
+        .background(Color(UIColor.systemBackground))
+        .edgesIgnoringSafeArea(.all)
         .navigationBarTitle("", displayMode: .inline)
+        .navigationBarHidden(true)
+        .statusBar(hidden: false)
         .sheet(isPresented: $isAddingExpense) {
             AddExpenseView(group: $group, isPresented: $isAddingExpense)
         }
@@ -113,7 +195,7 @@ struct GroupDetailView: View {
     
     private func formatDate(_ date: Date) -> String {
         let formatter = DateFormatter()
-        formatter.dateFormat = "MM/dd"
+        formatter.dateFormat = "yyyy/MM/dd (E)"
         return formatter.string(from: date)
     }
 }

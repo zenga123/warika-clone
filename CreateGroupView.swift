@@ -4,6 +4,7 @@ import SwiftUI
 struct CreateGroupView: View {
     @Binding var groups: [Group]
     @Binding var isPresented: Bool
+    @Binding var selectedGroupIndex: Int?
     
     @State private var groupName: String = ""
     @State private var memberName: String = ""
@@ -86,6 +87,8 @@ struct CreateGroupView: View {
                 Button(action: {
                     let newGroup = Group(name: groupName.isEmpty ? "新しいグループ" : groupName, members: members)
                     groups.append(newGroup)
+                    // Set the selected group index to navigate directly to it
+                    selectedGroupIndex = groups.count - 1
                     isPresented = false
                 }) {
                     Text("グループを作成")
@@ -93,11 +96,11 @@ struct CreateGroupView: View {
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(Color.walicaPrimary)
+                        .background(!(members.count < 2 || groupName.isEmpty) ? Color.walicaPrimary : Color.gray.opacity(0.3))
                         .cornerRadius(8)
                 }
                 .padding()
-                .disabled(members.isEmpty)
+                .disabled(members.count < 2 || groupName.isEmpty)
             }
             .navigationTitle("Walica")
             .navigationBarItems(leading:

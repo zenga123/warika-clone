@@ -4,6 +4,7 @@ import SwiftUI
 struct ContentView: View {
     @State private var groups: [Group] = []
     @State private var isShowingCreateGroup = false
+    @State private var selectedGroupIndex: Int? = nil
     
     var body: some View {
         NavigationView {
@@ -41,8 +42,20 @@ struct ContentView: View {
             }
             .navigationTitle("Walica")
             .sheet(isPresented: $isShowingCreateGroup) {
-                CreateGroupView(groups: $groups, isPresented: $isShowingCreateGroup)
+                CreateGroupView(groups: $groups, isPresented: $isShowingCreateGroup, selectedGroupIndex: $selectedGroupIndex)
             }
+            .background(
+                NavigationLink(
+                    destination: selectedGroupIndex != nil ?
+                        GroupDetailView(group: $groups[selectedGroupIndex!]) : nil,
+                    isActive: Binding(
+                        get: { selectedGroupIndex != nil },
+                        set: { if !$0 { selectedGroupIndex = nil } }
+                    )
+                ) {
+                    EmptyView()
+                }
+            )
         }
     }
 }
